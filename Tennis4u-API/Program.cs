@@ -1,4 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using Tennis4u_API.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MssqlDbConnString"));
+});
 
 // Add services to the container.
 
