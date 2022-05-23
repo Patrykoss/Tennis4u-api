@@ -89,6 +89,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITennisClubRepository, TennisClubRepository>();
 
 builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
