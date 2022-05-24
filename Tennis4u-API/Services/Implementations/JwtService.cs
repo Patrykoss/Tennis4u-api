@@ -31,10 +31,10 @@ namespace Tennis4u_API.Services.Implementations
             {
                 new(ClaimTypes.NameIdentifier, user.IdPerson.ToString()),
             };
-            if(user.RoleInClubName is not null)
+            if (user.RoleInClubName is not null)
                 userClaims.Add(new(ClaimTypes.Role, user.RoleInClubName));
-            
-            if(user.IsClient)
+
+            if (user.IsClient)
                 userClaims.Add(new(ClaimTypes.Role, "Client"));
 
             if (user.IdClub is not null)

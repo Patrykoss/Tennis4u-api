@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Tennis4u_API.Repositories.Interfaces;
 
 namespace Tennis4u_API.Controllers

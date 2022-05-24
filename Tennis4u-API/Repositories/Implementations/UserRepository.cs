@@ -68,7 +68,7 @@ namespace Tennis4u_API.Repositories.Implementations
             var person = await _context.Persons.SingleOrDefaultAsync(p => p.IdPerson == user.IdPerson);
             person.RefreshToken = refreshToken;
             person.RefreshTokenExp = refreshTokenExp;
-            return await _context.SaveChangesAsync() > 0? UserStatus.RefreshTokenAdded : UserStatus.DbError;
+            return await _context.SaveChangesAsync() > 0 ? UserStatus.RefreshTokenAdded : UserStatus.DbError;
         }
     }
 }

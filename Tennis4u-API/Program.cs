@@ -47,21 +47,21 @@ builder.Services.AddAuthentication(opt =>
             return Task.CompletedTask;
         },
 
-/*        OnTokenValidated = tokenContext =>
-        {
-            try
-            {
-                tokenContext.HttpContext.User = tokenContext.Principal ?? throw new InvalidOperationException();
-            }
-            catch
-            {
-                tokenContext.Response.StatusCode = 401;
-                tokenContext.Response.CompleteAsync();
-            }
+        /*        OnTokenValidated = tokenContext =>
+                {
+                    try
+                    {
+                        tokenContext.HttpContext.User = tokenContext.Principal ?? throw new InvalidOperationException();
+                    }
+                    catch
+                    {
+                        tokenContext.Response.StatusCode = 401;
+                        tokenContext.Response.CompleteAsync();
+                    }
 
-            return Task.CompletedTask;
-        }
-*/
+                    return Task.CompletedTask;
+                }
+        */
     };
 });
 
@@ -90,6 +90,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITennisClubRepository, TennisClubRepository>();
+builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
+
 
 builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 builder.Services.AddScoped<IJwtService, JwtService>();

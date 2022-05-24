@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Tennis4u_API.DTOs.Requests;
@@ -60,7 +59,7 @@ namespace Tennis4u_API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
 
             var accessToken = _jwtService.GenerateAccessToken(user);
-            
+
 
             return Ok(new LoginResponseDTO
             {
