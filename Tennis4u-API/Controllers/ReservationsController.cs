@@ -47,6 +47,20 @@ namespace Tennis4u_API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Client")]
+        [HttpPut("{idReservation}")]
+        public async Task<IActionResult> CancelReservation(int idReservation)
+        {
+            var idUser = JwtTokenExtention.GetIdUser(User);
+            if (idUser == null)
+                return Unauthorized();
+            var result = await _reservationRepository.CancelReservationByIdAsync(idReservation, idUser);
+            if(result == ReservationStatus.NotExist)
+                return NotFound("");
+            if (result == ReservationStatus.DbError)
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Błąd serwera");
+            return NoContent();
+        }
 
     }
 }

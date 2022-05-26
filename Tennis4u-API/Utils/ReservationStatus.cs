@@ -3,6 +3,8 @@
     public enum ReservationStatus
     {
         DbError,
-        Added
+        Added,
+        NotExist,
+        Success
     }
 }

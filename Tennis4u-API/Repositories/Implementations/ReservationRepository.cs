@@ -88,5 +88,15 @@ namespace Tennis4u_API.Repositories.Implementations
             return ReservationStatus.Added;
         }
 
+        public async Task<ReservationStatus> CancelReservationByIdAsync(int idReservation, int? idUser)
+        {
+            var reservation = await _context.Reservations.SingleOrDefaultAsync(r => r.IdReservation == idReservation && r.IdPerson == idUser);
+            if (reservation == null)
+                return ReservationStatus.NotExist;
+            reservation.IdState = 3;
+            if (!(await _context.SaveChangesAsync() > 0))
+                return ReservationStatus.DbError;
+            return ReservationStatus.Success;
+        }
     }
 }

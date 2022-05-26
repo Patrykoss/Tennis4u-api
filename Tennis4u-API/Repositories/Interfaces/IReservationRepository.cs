@@ -9,5 +9,6 @@ namespace Tennis4u_API.Repositories.Interfaces
         Task<List<ReservationInScheduleResponseDTO>> GetReservationsInClubByDayAsync(int idTennisClub, DateTime dateOfReservation);
         Task<ReservationDetailsResponseDTO> GetInfoForReservationAsync(int idTennisCourt, DateTime dateReservation, TimeSpan timeReservation);
         Task<ReservationStatus> AddReservationsAsync(ReservationRequestDTO reservationDto, int? idUser, bool isWorker);
+        Task<ReservationStatus> CancelReservationByIdAsync(int idReservation, int? idUser);
     }
 }
