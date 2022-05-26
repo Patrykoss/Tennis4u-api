@@ -60,14 +60,13 @@ builder.Services.AddAuthentication(opt =>
                     }
 
                     return Task.CompletedTask;
-                }
-        */
+                }*/
+
     };
 });
 
 // Add services to the container.
 
-/////////////////////////////////////////////////////
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
@@ -81,8 +80,6 @@ builder.Services.AddCors(options =>
                       });
 });
 
-/////////////////////////////////////////////////
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -91,7 +88,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITennisClubRepository, TennisClubRepository>();
 builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
-
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
 builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -112,6 +110,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -2,7 +2,7 @@
 {
     public class WorkDayResponseDTO
     {
-        public string Day { get; set; }
+        public string DayName { get; set; }
         public TimeSpan OpenHour { get; set; }
         public TimeSpan CloseHour { get; set; }
     }

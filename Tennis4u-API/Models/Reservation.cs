@@ -5,8 +5,9 @@
         public int IdReservation { get; set; }
         public int IdTennisCourt { get; set; }
         public int? IdPerson { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime ReservationDate { get; set; }
+        public TimeSpan StartReservation { get; set; }
+        public TimeSpan EndReservation { get; set; }
         public int IdState { get; set; }
 
         public virtual State IdStateNavigation { get; set; }

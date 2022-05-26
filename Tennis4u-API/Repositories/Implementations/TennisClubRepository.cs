@@ -29,7 +29,7 @@ namespace Tennis4u_API.Repositories.Implementations
                 Logo = t.Logo,
                 WorkDays = t.WorkDays.Select(w => new WorkDayResponseDTO
                 {
-                    Day = w.IdDayNavigation.Name,
+                    DayName = w.IdDayNavigation.Name,
                     OpenHour = w.OpenHour,
                     CloseHour = w.CloseHour
                 }).ToList()
@@ -46,6 +46,42 @@ namespace Tennis4u_API.Repositories.Implementations
                 Street = t.Street,
                 Logo = t.Logo
             }).ToListAsync();
+        }
+
+        public async Task<ClubHoursResponseDTO> GetWorkingHoursByDayAsync(int idTennisClub, DateTime dateOfWork)
+        {
+            var idDay = (int)dateOfWork.DayOfWeek == 0 ? 7 : (int)dateOfWork.DayOfWeek;
+            var clubInfo = await _context.WorkDays.Where(w => w.IdDay == idDay && w.IdTennisClub == idTennisClub).Select(w => new
+            {
+                OpenHour = w.OpenHour,
+                CloseHour = w.CloseHour,
+                Courts = w.IdTenniClubNavigation.TennisCourts.Select(c => new TennisCourtInScheduleResponseDTO
+                {
+                    IdTennisClub = c.IdTennisClub,
+                    IdTennisCourt = c.IdTennisCourt,
+                    Number = c.Number,
+                    Roof = c.IdRoofNavigation.Name,
+                    Surface = c.IdSurfaceNavigation.Name
+                }).ToList()
+            }).SingleOrDefaultAsync();
+            var workingHours = new List<WorkingHourResponseDTO>();
+            if (clubInfo == null)
+                return null;
+            var hoursDiff = (clubInfo.CloseHour - clubInfo.OpenHour).TotalHours;
+            for (int i = 0; i < hoursDiff; i++)
+            {
+                var h = clubInfo.OpenHour.Add(new TimeSpan(i, 0, 0));
+                workingHours.Add(new WorkingHourResponseDTO
+                {
+                    Hour = string.Format("{0}:{1:00}", h.Hours, h.Minutes)
+                });
+            }
+
+            return new ClubHoursResponseDTO
+            {
+                WorkHours = workingHours,
+                Courts = clubInfo.Courts
+            };
         }
     }
 }
