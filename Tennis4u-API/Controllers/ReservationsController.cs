@@ -62,5 +62,20 @@ namespace Tennis4u_API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Manager,Worker")]
+        [HttpPost("match")]
+        public async Task<IActionResult> AddReservationWithMatchForTournament([FromBody] RegisterMatchRequestDTO registerMatchDto)
+        {
+            var idClub = JwtTokenExtention.GetIdClub(User);
+            if (idClub == null)
+                return Unauthorized();
+            var result = await _reservationRepository.AddReservationWithMatchAsync(registerMatchDto, idClub);
+            if (result == ReservationStatus.NotExist)
+                return BadRequest("");
+            if (result == ReservationStatus.DbError)
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Błąd serwera");
+            return NoContent();
+        }
+
     }
 }

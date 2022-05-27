@@ -23,9 +23,9 @@ namespace Tennis4u_API.Repositories.Implementations
             }).SingleOrDefaultAsync();
         }
 
-        public async Task<List<ClientForReservationResponseDTO>> GetClientsForReservationAsync()
+        public async Task<List<ClientShortDetailsResponseDTO>> GetClientsForReservationAsync()
         {
-            return await _context.Clients.Select(c => new ClientForReservationResponseDTO
+            return await _context.Clients.Select(c => new ClientShortDetailsResponseDTO
             {
                 IdClient = c.IdPerson,
                 Name = c.FirstName + " " + c.LastName,

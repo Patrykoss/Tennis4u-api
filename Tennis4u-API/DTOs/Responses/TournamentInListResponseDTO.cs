@@ -10,5 +10,6 @@
         public string? WinnerName { get; set; }
         public int IdTennisClub { get; set; }
         public string TennisClubName { get; set; }
+        public bool HasReservations { get; set; }
     }
 }

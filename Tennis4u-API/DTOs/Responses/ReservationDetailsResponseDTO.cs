@@ -2,6 +2,7 @@
 {
     public class ReservationDetailsResponseDTO
     {
+        public int IdTennisClub { get; set; }
         public int IdTennisCourt { get; set; }
         public int Number { get; set; }
         public string Roof { get; set; }

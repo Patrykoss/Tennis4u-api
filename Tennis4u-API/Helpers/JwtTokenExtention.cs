@@ -13,6 +13,15 @@ namespace Tennis4u_API.Helpers
             return parsedIdUser;
         }
 
+        public static int? GetIdClub(ClaimsPrincipal claimPrincipal)
+        {
+            var idClub = claimPrincipal.FindFirst(ClaimTypes.GroupSid)?.Value;
+            var canParse = int.TryParse(idClub, out var parsedIdClub);
+            if (!canParse)
+                return null;
+            return parsedIdClub;
+        }
+
         public static bool IsWorkerOrManager(ClaimsPrincipal claimPrincipal)
         {
             var rolesUser = claimPrincipal.FindFirst(ClaimTypes.Role)?.Value;

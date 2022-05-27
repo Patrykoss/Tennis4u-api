@@ -102,5 +102,19 @@ namespace Tennis4u_API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Manager,Worker")]
+        [HttpGet("{idMatch}/matchPlayers")]
+        public async Task<IActionResult> GetRegisteredPlayers(int idMatch)
+        {
+            var idClub = JwtTokenExtention.GetIdClub(User);
+            if (idClub == null)
+                return Unauthorized();
+            var idTournament = await _tournamentsRepository.GetIdTournamentAsync(idMatch);
+            var result = await _tournamentsRepository.GetAvailablePlayersForMatchAsync(idTournament.Value, idMatch, idClub);
+            if (!result.Item1)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Nie upoważniony dostęp");
+            return Ok(result.Item2);
+        }
+
     }
 }

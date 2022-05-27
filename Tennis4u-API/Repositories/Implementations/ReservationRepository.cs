@@ -21,6 +21,7 @@ namespace Tennis4u_API.Repositories.Implementations
         {
             var reservationDetail = await _context.TennisCourts.Where(t => t.IdTennisCourt == idTennisCourt).Select(r => new ReservationDetailsResponseDTO
             {
+                IdTennisClub = r.IdTennisClub,
                 IdTennisCourt = idTennisCourt,
                 Number = r.Number,
                 Price = r.Price,
@@ -97,6 +98,37 @@ namespace Tennis4u_API.Repositories.Implementations
             if (!(await _context.SaveChangesAsync() > 0))
                 return ReservationStatus.DbError;
             return ReservationStatus.Success;
+        }
+
+        public async Task<ReservationStatus> AddReservationWithMatchAsync(RegisterMatchRequestDTO registerMatchDto, int? idClub)
+        {
+            var newReservation = new Reservation
+            {
+                IdTennisCourt = registerMatchDto.IdTennisCourt,
+                ReservationDate = DateTime.ParseExact(registerMatchDto.ReservationDate, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
+                StartReservation = registerMatchDto.StartReservation,
+                EndReservation = registerMatchDto.StartReservation.Add(new TimeSpan(registerMatchDto.AmountOfReservation, 0, 0)),
+                IdState = 1,
+                IdPerson = null
+            };
+
+            var idTournament = await _context.Matches.Where(m => m.IdMatch == registerMatchDto.IdMatch).Select(m => m.IdTournament).SingleOrDefaultAsync();
+            var playersOneIsRegistered = await _context.Registrations.AnyAsync(r => r.IdClient == registerMatchDto.IdPlayerTwo && r.IdTournament == idTournament);
+            var playersTwoIsRegistered = await _context.Registrations.AnyAsync(r => r.IdClient == registerMatchDto.IdPlayerOne && r.IdTournament == idTournament);
+            if (!playersOneIsRegistered || !playersTwoIsRegistered)
+                return ReservationStatus.NotExist;
+            await _context.AddAsync(newReservation);
+            if (!(await _context.SaveChangesAsync() > 0))
+                return ReservationStatus.DbError;
+            var match = await _context.Matches.SingleOrDefaultAsync(m => m.IdMatch == registerMatchDto.IdMatch);
+
+            match.IdClientOne = registerMatchDto.IdPlayerOne;
+            match.IdClientTwo = registerMatchDto.IdPlayerTwo;
+            match.IdReservation = newReservation.IdReservation;
+
+            if (!(await _context.SaveChangesAsync() > 0))
+                return ReservationStatus.DbError;
+            return ReservationStatus.Added;
         }
     }
 }

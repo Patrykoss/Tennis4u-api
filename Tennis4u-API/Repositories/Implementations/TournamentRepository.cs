@@ -38,7 +38,8 @@ namespace Tennis4u_API.Repositories.Implementations
                 Rank = t.Rank,
                 StartDate = t.StartDate,
                 IdWinner = t.Matches.Where(m => m.IdStage == 1).Select(m => m.IdWinner).SingleOrDefault(),
-                IdTennisClub = t.IdTennisClub
+                IdTennisClub = t.IdTennisClub,
+                HasReservations = t.Matches.Any(m => m.IdReservation != null)
             }).OrderByDescending(t => t.StartDate).ToListAsync();
             foreach (var tournament in tournaments)
             {
@@ -104,14 +105,17 @@ namespace Tennis4u_API.Repositories.Implementations
 
         public async Task<List<MatchOfTournamentResponseDTO>> GetMatchesOfTournamentAsync(int idTournament)
         {
-            return await _context.Matches.Where(m => m.IdTournament == idTournament && m.IdReservation !=null).Select(m => new MatchOfTournamentResponseDTO
+            return await _context.Matches.Where(m => m.IdTournament == idTournament).Select(m => new MatchOfTournamentResponseDTO
             {
+                IdTennisClub = m.IdTournamentNavigation.IdTennisClub,
+                IdMatch = m.IdMatch,
                 IdClientOne = m.IdClientOne,
                 IdClientTwo = m.IdClientTwo,
                 NameOne = m.IdClientOneNavigation.FirstName + " " + m.IdClientOneNavigation.LastName,
                 NameTwo = m.IdClientTwoNavigation.FirstName + " " + m.IdClientTwoNavigation.LastName,
                 IdWinner = m.IdWinner,
-                DateOfMatch = m.IdReservationNavigation.ReservationDate.Date.ToString() + " " + m.IdReservationNavigation.StartReservation.ToString("hh\\:mm") + "-" + m.IdReservationNavigation.EndReservation.ToString("hh\\:mm"),
+                DateOfMatch = m.IdReservation==null ? null : m.IdReservationNavigation.ReservationDate.Date.ToString() + " " + m.IdReservationNavigation.StartReservation.ToString("hh\\:mm") + "-" + m.IdReservationNavigation.EndReservation.ToString("hh\\:mm"),
+                DateOfStart = m.IdTournamentNavigation.StartDate.Date,
                 Result = m.Result,
                 Stage = m.IdStageTournamentNavigation.Name
             }).ToListAsync();
@@ -124,6 +128,47 @@ namespace Tennis4u_API.Repositories.Implementations
                 IdTournament = t.IdTournament,
                 TournamentName = t.Name
             }).SingleOrDefaultAsync();
+        }
+
+        public async Task<Tuple<bool,ReservationMatchResponseDTO>> GetAvailablePlayersForMatchAsync(int idTournament, int idMatch, int? idClub)
+        {
+            var match = await _context.Matches.Where(m => m.IdTournamentNavigation.IdTennisClub == idClub && m.IdMatch == idMatch).Select(m => new 
+            {
+                TournamentStageName = m.IdStageTournamentNavigation.Name + " " + m.IdTournamentNavigation.Name,
+                Stage = m.IdStage,
+                LastStage = _context.Matches.Max(m => m.IdStage)
+            }).SingleOrDefaultAsync();
+            if(match == null)
+                return new ( false, null );
+            var registeredPlayers = new List<ClientShortDetailsResponseDTO>();
+            if (match.Stage == match.LastStage)
+                registeredPlayers = await _context.Registrations.Where(r => r.IdTournament == idTournament && !_context.Matches.Any(m => m.IdTournament == idTournament && (m.IdClientTwo == r.IdClient || m.IdClientOne == r.IdClient))).Select(r => new ClientShortDetailsResponseDTO
+                {
+                    IdClient = r.IdClient,
+                    Name = r.IdClientNavigation.FirstName + " " + r.IdClientNavigation.LastName
+                }).ToListAsync();
+            else
+            {
+                List<int?> winnersOfLastPage = await _context.Matches.Where(m => m.IdTournament == idTournament && m.IdStage == match.Stage + 1 && m.IdWinner != null).Select(m => m.IdWinner).ToListAsync();
+                registeredPlayers = await _context.Registrations.Where(r => r.IdTournament == idTournament && winnersOfLastPage.Contains(r.IdClient)).Select(r => new ClientShortDetailsResponseDTO
+                {
+                    IdClient = r.IdTournament,
+                    Name = r.IdClientNavigation.FirstName + " " + r.IdClientNavigation.LastName
+                }).ToListAsync();
+            }
+                
+            var result = new ReservationMatchResponseDTO
+            {
+                TournamentStageName = match.TournamentStageName,
+                Players = registeredPlayers
+            };
+            return new(true, result);
+        }
+
+        public async Task<int?> GetIdTournamentAsync(int idMatch)
+        {
+            var res = await _context.Matches.SingleOrDefaultAsync(m => m.IdMatch == idMatch);
+            return res.IdTournament;
         }
     }
 }
