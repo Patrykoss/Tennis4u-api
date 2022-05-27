@@ -51,6 +51,56 @@ namespace Tennis4u_API.Controllers
             };
         }
 
+        [Authorize(Roles = "Manager,Worker,Client")]
+        [HttpGet("{idTournament}")]
+        public async Task<IActionResult> GetTournament(int idTournament)
+        {
+            var idUser = JwtTokenExtention.GetIdUser(User);
+            if (idUser == null)
+                return Unauthorized();
+            var result = await _tournamentsRepository.GetTournamentDetailsAsync(idTournament, idUser, JwtTokenExtention.IsClient(User));
+            if (result == null)
+                return NotFound("Turniej nie istnieje");
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Client")]
+        [HttpPost("{idTournament}/registration")]
+        public async Task<IActionResult> RegisterForTournament(int idTournament)
+        {
+            var idUser = JwtTokenExtention.GetIdUser(User);
+            if (idUser == null)
+                return Unauthorized();
+            var result = await _tournamentsRepository.RegisterForTournamentAsync(idTournament, idUser);
+            if (result == TournamentStatus.DbError)
+                return StatusCode((int)HttpStatusCode.InternalServerError,"DbError");
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Manager,Worker,Client")]
+        [HttpGet("{idTournament}/players")]
+        public async Task<IActionResult> GetPlayersOfTournaments(int idTournament)
+        {
+            return Ok(await _tournamentsRepository.GetPlayersOfTournamentAsync(idTournament));
+        }
+
+        [Authorize(Roles = "Manager,Worker,Client")]
+        [HttpGet("{idTournament}/matches")]
+        public async Task<IActionResult> GetMatchesOfTournaments(int idTournament)
+        {
+            return Ok(await _tournamentsRepository.GetMatchesOfTournamentAsync(idTournament));
+        }
+
+
+        [Authorize(Roles = "Manager,Worker,Client")]
+        [HttpGet("{idTournament}/nav")]
+        public async Task<IActionResult> GetTournamentNav(int idTournament)
+        {
+            var result = await _tournamentsRepository.GetTournamentNavDetailsAsync(idTournament);
+            if (result == null)
+                return NotFound("");
+            return Ok(result);
+        }
 
     }
 }

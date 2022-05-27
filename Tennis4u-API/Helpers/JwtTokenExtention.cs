@@ -23,5 +23,15 @@ namespace Tennis4u_API.Helpers
             return false;
         }
 
+        public static bool IsClient(ClaimsPrincipal claimPrincipal)
+        {
+            var rolesUser = claimPrincipal.FindFirst(ClaimTypes.Role)?.Value;
+            if (rolesUser == null)
+                return false;
+            if (rolesUser.Contains("Client"))
+                return true;
+            return false;
+        }
+
     }
 }

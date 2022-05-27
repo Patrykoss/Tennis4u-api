@@ -9,5 +9,10 @@ namespace Tennis4u_API.Repositories.Interfaces
         Task<List<TournamentInListResponseDTO>> GetClubTournamentsAsync(int idTennisClub);
         Task<TournamentStatus> DeleteTournamentByIdAsync(int idTournament);
         Task<bool> IsWorkerManageOfTournament(int? idWorker, int idTournament);
+        Task<TournamentDetailsResponseDTO?> GetTournamentDetailsAsync(int idTournament, int? idUser, bool isClient);
+        Task<TournamentStatus> RegisterForTournamentAsync(int idTournament, int? idUser);
+        Task<List<PlayerOfTournamentResponseDTO>> GetPlayersOfTournamentAsync(int idTournament);
+        Task<List<MatchOfTournamentResponseDTO>> GetMatchesOfTournamentAsync(int idTournament);
+        Task<TournamentNavResponseDTO?> GetTournamentNavDetailsAsync(int idTournament);
     }
 }

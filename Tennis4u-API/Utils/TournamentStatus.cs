@@ -4,6 +4,7 @@
     {
         TournamentNotExist,
         DbError,
-        TournamentDeleted
+        TournamentDeleted,
+        Success
     }
 }
