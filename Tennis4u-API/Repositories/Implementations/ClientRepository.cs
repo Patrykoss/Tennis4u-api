@@ -19,7 +19,8 @@ namespace Tennis4u_API.Repositories.Implementations
             return await _context.Clients.Where(c => c.IdPerson == idClient).Select(c => new ClientProfileNavResponseDTO
             {
                 IdClient = c.IdPerson,
-                Name = c.FirstName + " " + c.LastName
+                Name = c.FirstName + " " + c.LastName,
+                Avatar = c.Avatar
             }).SingleOrDefaultAsync();
         }
 

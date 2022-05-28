@@ -42,6 +42,8 @@ namespace Tennis4u_API.Controllers
                 return Unauthorized();
             var isW = JwtTokenExtention.IsWorkerOrManager(User);
             var result = await _reservationRepository.AddReservationsAsync(ReservationRequestDTO, idUser, isW);
+            if (result == ReservationStatus.ToManyReservations)
+                return BadRequest("Przekroczono limit niezapłaconych rezerwacji");
             if (result == ReservationStatus.DbError)
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Błąd serwera");
             return NoContent();

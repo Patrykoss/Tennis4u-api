@@ -27,8 +27,8 @@ namespace Tennis4u_API.EfConfigurations
 
             var tournaments = new List<Tournament>()
             {
-                new Tournament  {IdTournament = 1, Name = "STC Masters", IdTennisClub = 1, Rank = 1, StartDate = new DateTime(2022,5,7,12,0,0), EndDate = new DateTime(2022,5,8,20,0,0), FinalDateForRegistration = new DateTime(2022,5,4,19,0,0)},
-                new Tournament  {IdTournament = 2, Name = "ETC Masters", IdTennisClub = 1, Rank = 1, StartDate = new DateTime(2022,6,25,12,0,0), EndDate = new DateTime(2022,6,26,20,0,0), FinalDateForRegistration = new DateTime(2022,6,24,19,0,0)}
+                new Tournament  {IdTournament = 1, Name = "STC Masters", MaxNumberOfPlayers = 8, IdTennisClub = 1, Rank = 1, StartDate = new DateTime(2022,5,7,12,0,0), EndDate = new DateTime(2022,5,8,20,0,0), FinalDateForRegistration = new DateTime(2022,5,4,19,0,0)},
+                new Tournament  {IdTournament = 2, Name = "ETC Masters", MaxNumberOfPlayers = 8, IdTennisClub = 1, Rank = 1, StartDate = new DateTime(2022,6,25,12,0,0), EndDate = new DateTime(2022,6,26,20,0,0), FinalDateForRegistration = new DateTime(2022,6,24,19,0,0)}
             };
 
             builder.HasData(tournaments);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tennis4u_API.Data;
+using Tennis4u_API.DTOs.Requests;
 using Tennis4u_API.DTOs.Responses;
 using Tennis4u_API.Models;
 using Tennis4u_API.Repositories.Interfaces;
@@ -169,6 +170,65 @@ namespace Tennis4u_API.Repositories.Implementations
         {
             var res = await _context.Matches.SingleOrDefaultAsync(m => m.IdMatch == idMatch);
             return res.IdTournament;
+        }
+
+        public async Task<Tuple<TournamentStatus, Tournament>> CreateTournamentAsync(CreateTournamentRequestDTO createTournamentDto, int idTennisClub)
+        {
+            var tournament = new Tournament
+            {
+                Name = createTournamentDto.Name,
+                Rank = createTournamentDto.Rank,
+                StartDate = createTournamentDto.StartDate,
+                EndDate = createTournamentDto.EndDate,
+                MaxNumberOfPlayers = createTournamentDto.MaxPlayers,
+                FinalDateForRegistration = createTournamentDto.FinalDateForRegistration,
+                IdTennisClub = idTennisClub
+            };
+            await _context.AddAsync(tournament);
+            if (!(await _context.SaveChangesAsync() > 0))
+                return new(TournamentStatus.DbError,null);
+
+            return new(TournamentStatus.Success, tournament);
+        }
+
+
+        public async Task<TournamentStatus> UpdateTournamentAsync(TournamentUpdateRequestDTO tournamentUpdateDto)
+        {
+            var tournament = await _context.Tournaments.SingleOrDefaultAsync(t => t.IdTournament == tournamentUpdateDto.IdTournament);
+            if (tournament == null)
+                return TournamentStatus.TournamentNotExist;
+            tournament.Name = tournamentUpdateDto.Name;
+            tournament.Rank = tournamentUpdateDto.Rank;
+            tournament.StartDate = tournamentUpdateDto.StartDate;
+            tournament.EndDate = tournamentUpdateDto.EndDate;
+            tournament.MaxNumberOfPlayers = tournamentUpdateDto.MaxPlayers;
+            tournament.FinalDateForRegistration = tournamentUpdateDto.FinalDateForRegistration;
+
+            if (!(await _context.SaveChangesAsync() > 0))
+                return TournamentStatus.DbError;
+
+            return TournamentStatus.Success;
+        }
+
+        public async Task<bool> AssignMatches(Tournament tournament)
+        {
+            for (int x = 1, c = 1, d =1; x < tournament.MaxNumberOfPlayers; x = x * 2, d++)
+            {
+                for (int i = 1; i <= x && c < tournament.MaxNumberOfPlayers; i++)
+                {
+                    var match = new Match()
+                    {
+                        IdStage = d,
+                        IdTournament = tournament.IdTournament
+                    };
+                    await _context.AddAsync(match);
+                    c++;
+                }
+            }
+
+            if (!(await _context.SaveChangesAsync() > 0))
+                return false;
+            return true;
         }
     }
 }

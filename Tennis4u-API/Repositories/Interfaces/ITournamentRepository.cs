@@ -1,4 +1,6 @@
-﻿using Tennis4u_API.DTOs.Responses;
+﻿using Tennis4u_API.DTOs.Requests;
+using Tennis4u_API.DTOs.Responses;
+using Tennis4u_API.Models;
 using Tennis4u_API.Utils;
 
 namespace Tennis4u_API.Repositories.Interfaces
@@ -16,5 +18,8 @@ namespace Tennis4u_API.Repositories.Interfaces
         Task<TournamentNavResponseDTO?> GetTournamentNavDetailsAsync(int idTournament);
         Task<Tuple<bool,ReservationMatchResponseDTO>> GetAvailablePlayersForMatchAsync(int idTournament, int idMatch, int? idClub);
         Task<int?> GetIdTournamentAsync(int idMatch);
+        Task<Tuple<TournamentStatus, Tournament>> CreateTournamentAsync(CreateTournamentRequestDTO createTournamentDto,int idTennisClub);
+        Task<TournamentStatus> UpdateTournamentAsync(TournamentUpdateRequestDTO tournamentUpdateDto);
+        Task<bool> AssignMatches(Tournament tournament);
     }
 }

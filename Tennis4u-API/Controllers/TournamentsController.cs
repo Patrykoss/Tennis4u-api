@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
+using Tennis4u_API.DTOs.Requests;
 using Tennis4u_API.Helpers;
 using Tennis4u_API.Repositories.Interfaces;
 using Tennis4u_API.Utils;
@@ -114,6 +115,34 @@ namespace Tennis4u_API.Controllers
             if (!result.Item1)
                 return StatusCode((int)HttpStatusCode.Forbidden, "Nie upoważniony dostęp");
             return Ok(result.Item2);
+        }
+
+        [Authorize(Roles = "Manager,Worker")]
+        [HttpPost]
+        public async Task<IActionResult> CreateTournament([FromBody]CreateTournamentRequestDTO createTournamentRequestDTO)
+        {
+            var idClub = JwtTokenExtention.GetIdClub(User);
+            if (idClub == null)
+                return Unauthorized();
+            var result = await _tournamentsRepository.CreateTournamentAsync(createTournamentRequestDTO, idClub.Value);
+            if (result.Item1 == TournamentStatus.DbError)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Błąd serwera");
+            var res = await _tournamentsRepository.AssignMatches(result.Item2);
+            if(!res)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Błąd serwera");
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Manager,Worker")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateTournament([FromBody] TournamentUpdateRequestDTO tournamentRequestDTO)
+        {
+            var result = await _tournamentsRepository.UpdateTournamentAsync(tournamentRequestDTO);
+            if (result == TournamentStatus.TournamentNotExist)
+                return NotFound("Nie istnieje turniej");
+            if (result == TournamentStatus.DbError)
+                return StatusCode((int)HttpStatusCode.Forbidden, "Błąd serwera");
+            return NoContent();
         }
 
     }

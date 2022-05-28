@@ -73,6 +73,12 @@ namespace Tennis4u_API.Repositories.Implementations
 
         public async Task<ReservationStatus> AddReservationsAsync(ReservationRequestDTO reservationDto, int? idUser, bool isWorker)
         {
+            if(idUser != null)
+            {
+                var amountOfUnPaidReservations = await _context.Reservations.Where(r => r.IdPerson == idUser && r.IdState == 2).ToListAsync();
+                if (amountOfUnPaidReservations.Count == 3)
+                    return ReservationStatus.ToManyReservations;
+            }
             var newReservation = new Reservation {
                 IdTennisCourt = reservationDto.IdTennisCourt,
                 IdPerson = isWorker ? (reservationDto.IdClient == 0 ? null : reservationDto.IdClient) : idUser,

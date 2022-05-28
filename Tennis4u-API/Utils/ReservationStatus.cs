@@ -5,6 +5,7 @@
         DbError,
         Added,
         NotExist,
-        Success
+        Success,
+        ToManyReservations
     }
 }

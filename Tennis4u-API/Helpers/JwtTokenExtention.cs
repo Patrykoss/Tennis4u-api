@@ -24,7 +24,9 @@ namespace Tennis4u_API.Helpers
 
         public static bool IsWorkerOrManager(ClaimsPrincipal claimPrincipal)
         {
-            var rolesUser = claimPrincipal.FindFirst(ClaimTypes.Role)?.Value;
+            var rolesUser = claimPrincipal.Claims.Where(c => c.Type == ClaimTypes.Role)
+                       .Select(c => c.Value)
+                       .ToList();
             if (rolesUser == null)
                 return false;
             if(rolesUser.Contains("Manager") || rolesUser.Contains("Worker"))
@@ -34,7 +36,9 @@ namespace Tennis4u_API.Helpers
 
         public static bool IsClient(ClaimsPrincipal claimPrincipal)
         {
-            var rolesUser = claimPrincipal.FindFirst(ClaimTypes.Role)?.Value;
+            var rolesUser = claimPrincipal.Claims.Where(c => c.Type == ClaimTypes.Role)
+                       .Select(c => c.Value)
+                       .ToList();
             if (rolesUser == null)
                 return false;
             if (rolesUser.Contains("Client"))
