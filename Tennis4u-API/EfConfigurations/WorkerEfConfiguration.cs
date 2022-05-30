@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tennis4u_API.Models;
 
@@ -23,7 +24,7 @@ namespace Tennis4u_API.EfConfigurations
 
             var workers = new List<Worker>()
             {
-                new Worker {IdPerson = 1, FirstName = "Roman", LastName = "Kowalski", Email = "r.kowalski@gmail.com", Password = "72341234", IdTennisClub = 1, IdRole = 1},
+                new Worker {IdPerson = 1, FirstName = "Roman", LastName = "Kowalski", Email = "r.kowalski@gmail.com", Password = new PasswordHasher<Worker>().HashPassword(new Worker(){IdPerson =2 }, "Admin1234#"), IdTennisClub = 1, IdRole = 1},
                 //new Worker {IdPerson = 2, IdTennisClub = 1, IdRole = 2}
             };
 
